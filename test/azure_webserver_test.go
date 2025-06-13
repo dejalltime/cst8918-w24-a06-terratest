@@ -10,7 +10,7 @@ import (
 
 // You normally want to run this under a separate "Testing" subscription
 // For lab purposes you will use your assigned subscription under the Cloud Dev/Ops program tenant
-var subscriptionID string = "<your-azure-subscription-id"
+var subscriptionID string = "b3d019b0-c6fd-4f25-ac45-54f25745f266"
 
 func TestAzureLinuxVMCreation(t *testing.T) {
 	terraformOptions := &terraform.Options{
@@ -18,7 +18,7 @@ func TestAzureLinuxVMCreation(t *testing.T) {
 		TerraformDir: "../",
 		// Override the default terraform variables
 		Vars: map[string]interface{}{
-			"labelPrefix": "<your-college-id>",
+			"labelPrefix": "mart1449",
 		},
 	}
 
@@ -33,4 +33,25 @@ func TestAzureLinuxVMCreation(t *testing.T) {
 
 	// Confirm VM exists
 	assert.True(t, azure.VirtualMachineExists(t, vmName, resourceGroupName, subscriptionID))
+
+	// Get the NIC name from terraform output
+
+	nicName := terraform.Output(t, terraformOptions, "nic_name")
+
+	// Confirm NIC exists
+
+	assert.True(t, azure.NetworkInterfaceExists(t, nicName, resourceGroupName, subscriptionID))
+
+	// Confirm the VM is running the correct Ubuntu version
+
+	vm := azure.GetVirtualMachine(t, vmName, resourceGroupName, subscriptionID)
+
+	assert.Equal(t, "Canonical", *vm.StorageProfile.ImageReference.Publisher)
+
+	assert.Equal(t, "0001-com-ubuntu-server-jammy", *vm.StorageProfile.ImageReference.Offer)
+
+	assert.Equal(t, "22_04-lts-gen2", *vm.StorageProfile.ImageReference.Sku)
+
+	
 }
+ 
