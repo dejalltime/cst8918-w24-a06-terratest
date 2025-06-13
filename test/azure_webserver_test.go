@@ -51,7 +51,5 @@ func TestAzureLinuxVMCreation(t *testing.T) {
 	assert.Equal(t, "0001-com-ubuntu-server-jammy", *vm.StorageProfile.ImageReference.Offer)
 
 	assert.Equal(t, "22_04-lts-gen2", *vm.StorageProfile.ImageReference.Sku)
-
-	
 }
  
